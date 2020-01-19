@@ -23,11 +23,9 @@ func (h hasher2point) Hash(msg []byte) (Point, error) {
 	Y := Q.Y().Polynomial()
 	P.X.Set(X[0])
 	P.Y.Set(Y[0])
-
 	if !P.IsValid() {
 		return Point{}, oerr.ErrInvalidGroupElement
 	}
-
 	return P, nil
 }
 
@@ -39,8 +37,6 @@ func getH2CSuite(gc GroupCurve) (HashToPoint, error) {
 		suite = h2c.P384_SHA512_SSWU_RO_
 	case "P-521":
 		suite = h2c.P521_SHA512_SSWU_RO_
-	case "curve-448":
-		suite = h2c.Curve448_SHA512_ELL2_RO_
 	default:
 		return nil, oerr.ErrUnsupportedGroup
 	}
@@ -49,6 +45,6 @@ func getH2CSuite(gc GroupCurve) (HashToPoint, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	return hasher2point{gc, hasher, dst}, nil
 }
+
