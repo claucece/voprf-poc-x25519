@@ -47,4 +47,3 @@ func getH2CSuite(gc GroupCurve) (HashToPoint, error) {
 	}
 	return hasher2point{gc, hasher, dst}, nil
 }
-
