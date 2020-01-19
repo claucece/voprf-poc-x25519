@@ -100,11 +100,11 @@ func (params h2cParams) sswu(uArr []*big.Int) (Point, error) {
 
 // elligator2 implements the Elligator2 method for curve mapping, defined in
 // https://tools.ietf.org/html/draft-irtf-cfrg-hash-to-curve-05, section 6.7.1.1.
-func (params h2cParams) elligator2(u *big.Int) (Point, error) {
-	//if len(uArr) > 1 {
-	//return Point{}, oerr.ErrIncompatibleGroupParams
-	//}
-	//u := uArr[0]
+func (params h2cParams) elligator2(uArr []*big.Int) (Point, error) {
+	if len(uArr) > 1 {
+		return Point{}, oerr.ErrIncompatibleGroupParams
+	}
+	u := uArr[0]
 	p, A, B, Z := params.p, params.a, params.b, big.NewInt(int64(params.z))
 
 	t1, x1, x2, gx1, gx2, y2, x, y := new(big.Int), new(big.Int), new(big.Int), new(big.Int), new(big.Int), new(big.Int), new(big.Int), new(big.Int)
