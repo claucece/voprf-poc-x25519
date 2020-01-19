@@ -61,6 +61,23 @@ func (c GroupCurve) New(name string) (gg.PrimeOrderGroup, error) {
 		gc.consts.a = curve.Params().B
 		gc.consts.isSqExp = new(big.Int).Rsh(new(big.Int).Sub(curve.Params().P, constants.One), 1)
 		gc.consts.sqrtExp = new(big.Int).Rsh(new(big.Int).Add(curve.Params().P, constants.One), 2)
+	case "curve-25519":
+		gc.ops = p448.CurveP25519()
+		curve := gc.ops
+		gc.nist = false
+		gc.byteLength = (curve.Params().BitSize + 7) / 8
+		gc.consts.a = curve.Params().B
+		gc.consts.isSqExp = new(big.Int).Rsh(new(big.Int).Sub(curve.Params().P, constants.One), 1)
+
+		// calculates s = sqrt(-1) for p=8*k+5
+		// t = 2^k
+		// s = 2*t^3+t
+		k := big.NewInt(5)
+		k.Sub(curve.Params().P, k) // p-5
+		k.Rsh(k, 3)                // k = (p-5)/8
+		k.Add(k, constants.One)    // e = k+1 = (p+3)/8
+
+		gc.consts.sqrtExp = k
 	default:
 		return nil, oerr.ErrUnsupportedGroup
 	}
@@ -226,6 +243,29 @@ func CreateCurve448(h hash.Hash, ee utils.ExtractorExpander) GroupCurve {
 	return gc
 }
 
+// CreateCurve25519 creates an instance of a GroupCurve corresponding to curve448.
+func CreateCurve25519(h hash.Hash, ee utils.ExtractorExpander) GroupCurve {
+	var gc GroupCurve
+	gc.ops = p448.CurveP25519()
+	gc.name = "curve-25519"
+	p := gc.ops.Params().P
+	gc.byteLength = (gc.ops.Params().BitSize + 7) / 8
+	gc.hash = h
+	gc.ee = ee
+	gc.nist = false
+	gc.sgn0 = utils.Sgn0LE
+
+	consts := CurveConstants{
+		a:       gc.ops.Params().B,
+		sqrtExp: new(big.Int).Mod(new(big.Int).Mul(new(big.Int).Add(p, constants.One), new(big.Int).ModInverse(constants.Four, p)), p),
+		isSqExp: new(big.Int).Mod(new(big.Int).Mul(new(big.Int).Sub(p, constants.One), new(big.Int).ModInverse(constants.Two, p)), p),
+	}
+
+	gc.consts = consts
+
+	return gc
+}
+
 // Point implements the GroupElement interface and is compatible with the
 // GroupCurve PrimeOrderGroup instantiation. Stored explicit coordinates for
 // associating the Point with an elliptic curve. The compress flag dictates
@@ -239,11 +279,9 @@ type Point struct {
 // New returns a new point initialised to constants.Zero
 func (p Point) New(pog gg.PrimeOrderGroup) gg.GroupElement {
 	return Point{
-		X:        new(big.Int).Set(constants.Zero),
-		Y:        new(big.Int).Set(constants.Zero),
-		pog:      pog,
-		compress: true,
-	}
+		X:   new(big.Int).Set(constants.Zero),
+		Y:   new(big.Int).Set(constants.Zero),
+		pog: pog, compress: true}
 }
 
 // Equal returns true if the two Point objects have the same X and Y
@@ -271,7 +309,7 @@ func (p Point) Equal(ge gg.GroupElement) bool {
 	pChkGroup.X = pEq.X
 	pChkGroup.Y = pEq.Y
 
-	if curve.name == "curve-448" {
+	if curve.name == "curve-448" || curve.name == "curve-25519" {
 		return (p.X.Cmp(pEq.X) == 0)
 	}
 
@@ -299,8 +337,10 @@ func (p Point) ScalarMult(k *big.Int) (gg.GroupElement, error) {
 	}
 
 	if curve.name != "curve-448" {
-		if !p.IsValid() {
-			return nil, oerr.ErrInvalidGroupElement
+		if curve.name != "curve-25519" {
+			if !p.IsValid() {
+				return nil, oerr.ErrInvalidGroupElement
+			}
 		}
 	}
 
@@ -318,8 +358,10 @@ func (p Point) Add(ge gg.GroupElement) (gg.GroupElement, error) {
 	}
 
 	if curve.name != "curve-448" {
-		if !p.IsValid() {
-			return nil, oerr.ErrInvalidGroupElement
+		if curve.name != "curve-25519" {
+			if !p.IsValid() {
+				return nil, oerr.ErrInvalidGroupElement
+			}
 		}
 	}
 
@@ -347,7 +389,7 @@ func (p Point) Serialize() ([]byte, error) {
 		return buf, nil
 	}
 
-	if curve.name == "curve-448" {
+	if curve.name == "curve-448" || curve.name == "curve-25519" {
 		return p.X.Bytes(), nil
 	}
 
@@ -500,8 +542,10 @@ func castToPoint(ge gg.GroupElement) (Point, error) {
 	}
 
 	if curve.name != "curve-448" {
-		if !p.IsValid() {
-			return Point{}, oerr.ErrInvalidGroupElement
+		if curve.name != "curve-25519" {
+			if !p.IsValid() {
+				return Point{}, oerr.ErrInvalidGroupElement
+			}
 		}
 	}
 
