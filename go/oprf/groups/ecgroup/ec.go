@@ -345,6 +345,7 @@ func (p Point) ScalarMult(k *big.Int) (gg.GroupElement, error) {
 	}
 
 	p.X, p.Y = curve.ops.ScalarMult(p.X, p.Y, k.Bytes())
+
 	return p, nil
 }
 
