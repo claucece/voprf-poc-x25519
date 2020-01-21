@@ -9,4 +9,5 @@ require (
 	github.com/otrv4/ed448 v0.0.0-20200127022154-15c7055d6946
 	github.com/stretchr/testify v1.4.0
 	golang.org/x/crypto v0.0.0-20200117160349-530e935923ad
+	golang.org/x/sys v0.0.0-20200120151820-655fe14d7479 // indirect
 )
