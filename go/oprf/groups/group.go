@@ -64,6 +64,8 @@ func (c Ciphersuite) FromString(s string, pog PrimeOrderGroup) (Ciphersuite, err
 		pogNew, err = pog.New("P-521")
 	case "curve448":
 		pogNew, err = pog.New("curve-448")
+	case "curve25519":
+		pogNew, err = pog.New("curve-25519")
 	default:
 		return Ciphersuite{}, oerr.ErrUnsupportedGroup
 	}

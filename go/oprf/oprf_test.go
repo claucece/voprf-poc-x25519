@@ -14,12 +14,14 @@ import (
 )
 
 var (
-	validOPRFP384Ciphersuite      = "OPRF-P384-HKDF-SHA512-SSWU-RO"
-	validOPRFP521Ciphersuite      = "OPRF-P521-HKDF-SHA512-SSWU-RO"
-	validOPRFCURVE448Ciphersuite  = "OPRF-curve448-HKDF-SHA512-ELL2-RO"
-	validVOPRFP384Ciphersuite     = "VOPRF-P384-HKDF-SHA512-SSWU-RO"
-	validVOPRFP521Ciphersuite     = "VOPRF-P521-HKDF-SHA512-SSWU-RO"
-	validVOPRFCURVE448Ciphersuite = "VOPRF-curve448-HKDF-SHA512-ELL2-RO"
+	validOPRFP384Ciphersuite        = "OPRF-P384-HKDF-SHA512-SSWU-RO"
+	validOPRFP521Ciphersuite        = "OPRF-P521-HKDF-SHA512-SSWU-RO"
+	validOPRFCURVE448Ciphersuite    = "OPRF-curve448-HKDF-SHA512-ELL2-RO"
+	validOPRFCURVE25519Ciphersuite  = "OPRF-curve25519-HKDF-SHA512-ELL2-RO"
+	validVOPRFP384Ciphersuite       = "VOPRF-P384-HKDF-SHA512-SSWU-RO"
+	validVOPRFP521Ciphersuite       = "VOPRF-P521-HKDF-SHA512-SSWU-RO"
+	validVOPRFCURVE448Ciphersuite   = "VOPRF-curve448-HKDF-SHA512-ELL2-RO"
+	validVOPRFCURVE25519Ciphersuite = "VOPRF-curve25519-HKDF-SHA512-ELL2-RO"
 )
 
 func TestFullOPRFP384(t *testing.T) {
@@ -69,6 +71,10 @@ func TestServerSetupP521(t *testing.T) {
 
 func TestServerSetupCurve448(t *testing.T) {
 	checkServerSetup(t, validOPRFCURVE448Ciphersuite)
+}
+
+func TestServerSetupCurve25519(t *testing.T) {
+	checkServerSetup(t, validOPRFCURVE25519Ciphersuite)
 }
 
 func TestServerEvalP384(t *testing.T) {
