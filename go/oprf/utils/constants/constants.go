@@ -10,4 +10,5 @@ var (
 	MinusThree *big.Int = big.NewInt(-3)
 	Two        *big.Int = big.NewInt(2)
 	Four       *big.Int = big.NewInt(4)
+	Eight      *big.Int = big.NewInt(8)
 )
