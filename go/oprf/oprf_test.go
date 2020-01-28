@@ -113,6 +113,10 @@ func TestServerEvalCurve448(t *testing.T) {
 	checkServerEval(t, validOPRFCURVE448Ciphersuite, 1)
 }
 
+func TestServerEvalCurve25519(t *testing.T) {
+	checkServerEval(t, validOPRFCURVE25519Ciphersuite, 1)
+}
+
 func TestServerBlind(t *testing.T) {
 	s, err := serverSetup(validOPRFP384Ciphersuite)
 	if err != nil {
