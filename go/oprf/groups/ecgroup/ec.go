@@ -298,9 +298,11 @@ func (p Point) Equal(ge gg.GroupElement) bool {
 	}
 
 	if curve.name != "curve-448" {
-		// check that both points are valid
-		if !p.IsValid() || !pEq.IsValid() {
-			return false
+		if curve.name != "curve-25519" {
+			// check that both points are valid
+			if !p.IsValid() || !pEq.IsValid() {
+				return false
+			}
 		}
 	}
 

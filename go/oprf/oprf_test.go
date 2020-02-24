@@ -162,6 +162,10 @@ func TestClientSetupCurve448(t *testing.T) {
 	checkClientSetup(t, validOPRFCURVE448Ciphersuite)
 }
 
+func TestClientSetupCurve25519(t *testing.T) {
+	checkClientSetup(t, validOPRFCURVE25519Ciphersuite)
+}
+
 func TestClientBlindUnblindP384(t *testing.T) {
 	checkClientBlindUnblind(t, validOPRFP384Ciphersuite, 1)
 }
@@ -197,6 +201,10 @@ func TestClientBlindUnblindP521VerifiableMultiple(t *testing.T) {
 func TestClientBlindUnblindCurve448(t *testing.T) {
 	t.Skip("Skipping test.")
 	checkClientBlindUnblind(t, validOPRFCURVE448Ciphersuite, 1)
+}
+
+func TestClientBlindUnblindCurve25519(t *testing.T) {
+	checkClientBlindUnblind(t, validOPRFCURVE25519Ciphersuite, 1)
 }
 
 func TestClientFinalizeP384(t *testing.T) {
@@ -484,12 +492,15 @@ func clientSetupUnblind(validCiphersuite string, n int) (Client, Evaluation, [][
 		rand.Read(x)
 		P, r, err := c.Blind(x)
 		if err != nil {
+
 			return Client{}, Evaluation{}, nil, nil, nil, nil, err
 		}
 
 		if pog.Name() != "curve-448" {
-			if !P.IsValid() {
-				return Client{}, Evaluation{}, nil, nil, nil, nil, errors.New("Point is not valid")
+			if pog.Name() != "curve-25519" {
+				if !P.IsValid() {
+					return Client{}, Evaluation{}, nil, nil, nil, nil, errors.New("Point is not valid")
+				}
 			}
 		}
 		inputs[i] = x
